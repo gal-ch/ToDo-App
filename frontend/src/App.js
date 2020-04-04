@@ -67,9 +67,15 @@
       handleSubmit(e){
         e.preventDefault()
         console.log(('itm', this.state.activeItem));
-
-        var url ='http://127.0.0.1:8000/api/task-create/'
         var csrftoken = this.getCookie('csrftoken')
+        var url ='http://127.0.0.1:8000/api/task-create/'
+
+        if (this.state.editing == true){
+          url =`http://127.0.0.1:8000/api/task-update/${this.state.activeItem.id}/`
+          this.setState({
+            editing : false
+          })
+        }
 
         fetch(url, {
           method:'POST',
@@ -90,11 +96,17 @@
         }).catch(function(error){
           console.log('ERROR:', error)
         })
-
+      }
+      startEdting(task){
+        this.setState({
+          activeItem: task,
+          editing: true,
+        })
       }
         
       render(){
         var tasks = this.state.todoList
+        var self= this
         return(
           <div className="container">
             <div id="task-container">
@@ -118,7 +130,7 @@
                       <span>{task.title}</span>
                     </div>
                     <div style={{flex:1}}>
-                    <button className="btn btn-sm btn-outline-info">Edit</button>
+                    <button onClick={() => self.startEdting(task)} className="btn btn-sm btn-outline-info">Edit</button>
                     </div>
                     <div style={{flex:1}}>
                     <button className="btn btn-sm btn-outline-dark delete">-</button>
